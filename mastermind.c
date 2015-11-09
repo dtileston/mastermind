@@ -5,7 +5,7 @@
 #include <time.h>
 
 #define DIGITS 4
-#define BUFSIZE 100
+#define BUFSIZE 6
 
 struct result {
 	char red;
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 		while(!valid_guess) {
 			char buf[BUFSIZE] = {'\0'};
 			printf("Please make a guess (Ctrl+D to exit): ");
-			fgets(buf, sizeof(buf), stdin);
+			fgets(buf, BUFSIZE, stdin);
 			valid_guess = validate_input(buf, guess);
 			if(valid_guess < 0) {
 				fprintf(stderr, "\nExiting now!\n");
@@ -79,15 +79,16 @@ int validate_input(char *buf, char *guess)
 		return -1;
 	} else if (buf[0] == '\n') {
 		return 0;
-	} else if (strlen(buf) > 5) {
-		fprintf(stderr, "Input too long!\n");
-		return 0;
-	} else if (strlen(buf) < 5) {
+	} else if (buf[4] == '\0') {
 		fprintf(stderr, "Input too short!\n");
+		return 0;
+	} else if (buf[4] != '\n') {
+		fprintf(stderr, "Input too long!\n");
+		while(getchar() != '\n');
 		return 0;
 	}
 	strncpy(guess, buf, DIGITS);
-	guess[DIGITS+1] = '\0';
+	guess[DIGITS] = '\0';
 	for(int i=0; i < DIGITS; i++)
 	{
 		if (guess[i] < '0' || guess[i] > '9') {
